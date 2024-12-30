@@ -1,11 +1,25 @@
 --PRESSIONE F PARA LANÇAR A TEIA
---CRIADO POR ENRICO FIELZAO TE AMO MANU <3
+--CRIADO POR ENRICO FIELZAO E NOIS MANU <3
 
-
-
+local StarterGui = game:GetService("StarterGui")
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
+
+
+StarterGui:SetCore("SendNotification", {
+    Title = "Créditos",
+    Text = "Feita por enrico ratao",
+    Duration = 5
+})
+
+wait(1)
+
+StarterGui:SetCore("SendNotification", {
+    Title = "Como usar",
+    Text = "Segura F pra soltar a teia",
+    Duration = 5
+})
 
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
@@ -16,7 +30,7 @@ local webAttachment = nil
 local webJoint = nil
 local swinging = false
 local sprinting = false
-local pullForce = 5 -- Força de puxada da teia
+local pullForce = 5 
 
 local function CriarTeia(posicaoDeImpacto)
     if webAttachment then
@@ -24,7 +38,7 @@ local function CriarTeia(posicaoDeImpacto)
         return
     end
     
-    -- Criar visual da teia
+    
     local teia = Instance.new("Beam")
     local attachment0 = rootPart:FindFirstChild("RootAttachment") or Instance.new("Attachment", rootPart)
     teia.Attachment0 = attachment0
@@ -37,30 +51,30 @@ local function CriarTeia(posicaoDeImpacto)
     teia.CurveSize0 = 0
     teia.CurveSize1 = 0
     
-    -- Criar ponto de fixação
+    
     webAttachment = Instance.new("Attachment")
     webAttachment.Position = posicaoDeImpacto
     webAttachment.Parent = workspace.Terrain
     teia.Attachment1 = webAttachment
     teia.Parent = rootPart
     
-    -- Configurar física da teia com mais controle
+    
     webJoint = Instance.new("SpringConstraint")
     webJoint.Attachment0 = attachment0
     webJoint.Attachment1 = webAttachment
-    webJoint.Damping = 20 -- Aumentado para mais estabilidade
-    webJoint.Stiffness = 150 -- Reduzido para mais flexibilidade
-    webJoint.MaxForce = 50000 -- Reduzido para movimento mais suave
+    webJoint.Damping = 20 
+    webJoint.Stiffness = 150 
+    webJoint.MaxForce = 50000
     webJoint.Parent = rootPart
     
-    -- Iniciar animação de balanço e levantar braços
+    
     swingTrack:Play()
     humanoid:LoadAnimation(game.ReplicatedStorage.ArmsUpAnim):Play()
     swinging = true
     
-    -- Aplicar impulso inicial mais suave
+    
     local direcaoBalanco = (posicaoDeImpacto - rootPart.Position).Unit
-    rootPart.Velocity = rootPart.Velocity + (direcaoBalanco * 5) -- Reduzido para impulso inicial mais suave
+    rootPart.Velocity = rootPart.Velocity + (direcaoBalanco * 5) 
 end
 
 local function RemoverTeia()
@@ -75,7 +89,7 @@ local function RemoverTeia()
     swinging = false
     sprinting = false
     swingTrack:Stop()
-    -- Parar animação dos braços levantados
+    
     for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
         if track.Animation.Name == "ArmsUpAnim" then
             track:Stop()
@@ -83,7 +97,7 @@ local function RemoverTeia()
     end
 end
 
--- Controle de entrada
+
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     
@@ -110,27 +124,27 @@ UserInputService.InputEnded:Connect(function(input, gameProcessed)
     end
 end)
 
--- Atualização da física
+
 RunService.Heartbeat:Connect(function(deltaTime)
     if swinging and webAttachment then
-        local forcaBalanco = Vector3.new(0, -150, 0) -- Gravidade reduzida para mais controle
+        local forcaBalanco = Vector3.new(0, -150, 0) 
         
-        -- Adicionar força de puxada em direção ao ponto de fixação
+        
         local direcaoPuxada = (webAttachment.WorldPosition - rootPart.Position).Unit
         local distancia = (webAttachment.WorldPosition - rootPart.Position).Magnitude
-        local forcaPuxada = direcaoPuxada * (distancia * pullForce) -- Força proporcional à distância
+        local forcaPuxada = direcaoPuxada * (distancia * pullForce) 
         
         if sprinting then
-            -- Impulso mais controlado ao correr
+            
             local direcaoFrente = rootPart.CFrame.LookVector
-            local forcaImpulso = direcaoFrente * 7 -- Reduzido para movimento mais suave
+            local forcaImpulso = direcaoFrente * 7 
             rootPart.Velocity = rootPart.Velocity + (forcaImpulso * deltaTime)
         end
         
         rootPart.Velocity = rootPart.Velocity + (forcaBalanco * deltaTime)
         rootPart.Velocity = rootPart.Velocity + (forcaPuxada * deltaTime)
         
-        -- Limitar velocidade máxima para maior controle
+        
         local velocidadeMaxima = 50
         if rootPart.Velocity.Magnitude > velocidadeMaxima then
             rootPart.Velocity = rootPart.Velocity.Unit * velocidadeMaxima
@@ -138,7 +152,7 @@ RunService.Heartbeat:Connect(function(deltaTime)
     end
 end)
 
--- Limpeza ao renascer o personagem
+
 player.CharacterAdded:Connect(function(novoPersonagem)
     character = novoPersonagem
     humanoid = character:WaitForChild("Humanoid")
